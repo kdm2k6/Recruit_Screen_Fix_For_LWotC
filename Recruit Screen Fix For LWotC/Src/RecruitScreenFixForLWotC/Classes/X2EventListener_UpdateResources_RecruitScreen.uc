@@ -32,7 +32,7 @@ static function EventListenerReturn OnUpdateResources_RecruitScreen(Object Event
 
 	HQPres = `HQPRES;
 
-	// KDM : If our custom recruit screen is on the top of the screen stack, then set up UIAvengerHUD's resource display.
+	// KDM : If our custom recruit screen is on top of the screen stack, then set up UIAvengerHUD's resource display.
 	if (HQPres.ScreenStack.GetCurrentClass() == class'UIRecruitSoldiers_LWotC')
 	{
 		// KDM : Display the same information a normal recruit screen would show.

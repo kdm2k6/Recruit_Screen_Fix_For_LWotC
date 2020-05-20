@@ -5,6 +5,9 @@ var config int STAT_Y_OFFSET_CTRL;
 var config int STAT_FONT_SIZE_MK;
 var config int STAT_Y_OFFSET_MK;
 
+// KDM TEMP
+var UIPanel DividerLine;
+
 simulated function InitRecruitItem(XComGameState_Unit Recruit)
 {
 	super.InitRecruitItem(Recruit);
@@ -18,16 +21,40 @@ simulated function InitRecruitItem(XComGameState_Unit Recruit)
 	List.OnItemSizeChanged(self);
 }
 
+// KDM : This is called when the confirm button's size is realized; I need to override it to set the x location manually.
+simulated function RefreshConfirmButtonLocation()
+{
+	if (`ISCONTROLLERACTIVE)
+	{
+		ConfirmButton.SetX(352);
+	}
+	else
+	{
+		ConfirmButton.SetX(350);
+	}
+	RefreshConfirmButtonVisibility();
+}
+
 function UpdateExistingUI()
 {
-	local UIPanel DividerLine;
+	// KDM TEMP
+	//local UIPanel DividerLine;
 
 	bAnimateOnInit = false;
 
 	// LW : Move confirm button up.
-	ConfirmButton.SetY(0);
+	if (`ISCONTROLLERACTIVE)
+	{
+		ConfirmButton.SetY(-3);
+	}
+	else
+	{
+		ConfirmButton.SetY(-1);
+	}
+	
 	// LW : Move soldier name up
 	MC.ChildSetNum("soldierName", "_y", 5);
+	
 	// LW : Update flag size and position
 	MC.BeginChildFunctionOp("flag", "setImageSize");  
 	MC.QueueNumber(81);
@@ -35,6 +62,7 @@ function UpdateExistingUI()
 	MC.EndOp();
 	MC.ChildSetNum("flag", "_x", 7);
 	MC.ChildSetNum("flag", "_y", 10.5);
+	
 	// LW : Extend divider line
 	DividerLine = Spawn(class'UIPanel', self);
 	DividerLine.InitPanel('', class'UIUtilities_Controls'.const.MC_GenericPixel);
@@ -172,12 +200,5 @@ function UpdateText(string MCRoot)
 
 function int GetFontSize()
 {
-	if (`ISCONTROLLERACTIVE)
-	{
-		return STAT_FONT_SIZE_CTRL;
-	}
-	else
-	{
-		return STAT_FONT_SIZE_MK;
-	}
+	return (`ISCONTROLLERACTIVE) ? STAT_FONT_SIZE_CTRL : STAT_FONT_SIZE_MK;
 }
