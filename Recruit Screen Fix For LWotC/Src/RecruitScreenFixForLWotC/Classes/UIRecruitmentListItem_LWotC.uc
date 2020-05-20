@@ -79,9 +79,9 @@ function AddIcons(XComGameState_Unit Recruit)
 
 function InitIconValuePair(XComGameState_Unit Recruit, ECharStatType StatType, string MCRoot, string ImagePath, float XLoc, float YLoc)
 {
+	local float IconScale, XOffset, YOffset;
 	local UIImage StatIcon;
 	local UIText StatValue;
-	local float IconScale, XOffset, YOffset;
 
 	IconScale = 0.65f;
 	XOffset = 26.0f;
@@ -95,7 +95,7 @@ function InitIconValuePair(XComGameState_Unit Recruit, ECharStatType StatType, s
 	{
 		StatIcon = Spawn(class'UIImage', self);
 		StatIcon.bAnimateOnInit = false;
-		StatIcon.InitImage(name("RecruitmentItem_" $ MCRoot $ "Icon_LWotC"), ImagePath);
+		StatIcon.InitImage(, ImagePath);
 		StatIcon.SetScale(IconScale);
 		StatIcon.SetPosition(XLoc, YLoc);
 	}
@@ -104,14 +104,140 @@ function InitIconValuePair(XComGameState_Unit Recruit, ECharStatType StatType, s
 	{
 		StatValue = Spawn(class'UIText', self);
 		StatValue.bAnimateOnInit = false;
-		StatValue.InitText();
+		// KDM : Give each stat UIText a unique name, so that it can be accessed by that name when list item focus changes.
+		StatValue.InitText(name(MCRoot $ "_LWotC"));
 		StatValue.SetPosition(XLoc + XOffset, YLoc + YOffset);
-		StatValue.MCName = name("RecruitmentItem_" $ MCRoot $ "Value_LWotC");
 	}
 
 	StatValue.Text = string(int(Recruit.GetCurrentStat(StatType)));
 	StatValue.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(StatValue.Text, eUIState_Normal));
 }
+
+simulated function OnReceiveFocus()
+{
+	super.OnReceiveFocus();
+	RefreshStatText();
+}
+
+simulated function OnLoseFocus()
+{
+	super.OnLoseFocus();
+	RefreshStatText();
+}
+
+function RefreshStatText()
+{
+	UpdateText("Aim");
+	UpdateText("Defense");
+	UpdateText("Health");
+	UpdateText("Mobility");
+	UpdateText("Will");
+	UpdateText("Hacking");
+	UpdateText("Dodge");
+	UpdateText("Psi");
+}
+
+function UpdateText(string MCRoot)
+{
+	local bool Focused;
+	local string OriginalText;
+	local UIText StatValue;
+
+	Focused = bIsFocused;
+	
+	// KDM : Get the UIText according to its name.
+	StatValue = UIText(GetChildByName(name(MCRoot $ "_LWotC"), false));
+	
+	if (StatValue != none)
+	{
+		OriginalText = StatValue.Text;
+		// KDM : Change the text colour based on whether this list item is focused or not.
+		StatValue.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(OriginalText, (Focused ? -1 : eUIState_Normal)));
+	}
+}
+
+
+/*
+event OnReceiveFocus(UIScreen Screen)
+{
+    local UIRecruitSoldiers RecruitScreen;
+    local int i;
+
+    RecruitScreen = UIRecruitSoldiers(Screen);
+    if (RecruitScreen == none)
+    {
+        return;
+    }
+
+    for (i = 0; i < RecruitScreen.List.ItemContainer.ChildPanels.Length; i++)
+    {
+        class'UIRecruitmentListItem_LW'.static.UpdateItemsForFocus(UIRecruitmentListItem(RecruitScreen.List.ItemContainer.ChildPanels[i]));
+    }
+}
+
+event OnLoseFocus(UIScreen Screen)
+{
+    local UIRecruitSoldiers RecruitScreen;
+    local int i;
+
+    RecruitScreen = UIRecruitSoldiers(Screen);
+    if (RecruitScreen == none)
+    {
+        return;
+    }
+
+    for (i = 0; i < RecruitScreen.List.ItemContainer.ChildPanels.Length; i++)
+    {
+        class'UIRecruitmentListItem_LW'.static.UpdateItemsForFocus(UIRecruitmentListItem(RecruitScreen.List.ItemContainer.ChildPanels[i]));
+    }
+}
+
+static function UpdateItemsForFocus(UIRecruitmentListItem ListItem)
+{
+	local bool bReverse;
+
+	bReverse = ListItem.bIsFocused && !ListItem.bDisabled;
+
+	UpdateText(ListItem, "Aim", bReverse);
+	UpdateText(ListItem, "Defense", bReverse);
+	UpdateText(ListItem, "Health", bReverse);
+	UpdateText(ListItem, "Mobility", bReverse);
+	UpdateText(ListItem, "Will", bReverse);
+	UpdateText(ListItem, "Hacking", bReverse);
+	UpdateText(ListItem, "Dodge", bReverse);
+	UpdateText(ListItem, "Psi", bReverse);
+}
+
+static function UpdateText(UIRecruitmentListItem ListItem, string MCRoot, bool bReverse)
+{
+	local name LookupMCName;
+	local UIText Value;
+	local string OldText;
+
+	LookupMCName = name("RecruitmentItem_" $ MCRoot $ "Value_LW");
+	Value = UIText(ListItem.GetChildByName(LookupMCName, false));
+	if (Value != none)
+	{
+		OldText = Value.Text;
+		Value.SetHtmlText(class'UIUtilities_Text'.static.GetColoredText(OldText, (bReverse ? -1 : eUIState_Normal)));
+	}
+}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 static function AddRecruitStats(XComGameState_Unit Recruit, UIRecruitmentListItem ListItem)
