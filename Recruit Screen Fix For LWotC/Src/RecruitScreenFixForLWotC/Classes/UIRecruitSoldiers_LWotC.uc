@@ -1,12 +1,5 @@
 class UIRecruitSoldiers_LWotC extends UIRecruitSoldiers;
 
-simulated function InitScreen(XComPlayerController InitController, UIMovie InitMovie, optional name InitName)
-{
-	super.InitScreen(InitController, InitMovie, InitName);
-
-
-}
-
 simulated function UpdateData()
 {
 	local int i;

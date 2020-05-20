@@ -4,7 +4,7 @@ event OnInit(UIScreen Screen)
 {
 	local UIRecruitSoldiers_LWotC RecruitScreen;
 	local XComHQPresentationLayer HQPres;
-
+	
 	HQPres = `HQPRES;
 
 	HQPres.ScreenStack.Pop(Screen);
@@ -14,6 +14,6 @@ event OnInit(UIScreen Screen)
 
 defaultproperties
 { 
-	// KDM : Only listen for the UIRecruit_Soldiers screen.
-	ScreenClass = class'UIRecruit_Soldiers';
+	// KDM : Only listen for the UIRecruitSoldiers screen.
+	ScreenClass = class'UIRecruitSoldiers';
 }
